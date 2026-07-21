@@ -1,4 +1,4 @@
-const Cart = require("../models/Cart");
+import Cart from "../models/Cart.js";
 
 const getCarts = async (req, res) => {
   const carts = await Cart.find().populate("products.product");
@@ -21,7 +21,9 @@ const addProductToCart = async (req, res) => {
 
   const cart = await Cart.findById(cid);
 
-  const productIndex = cart.products.findIndex(p => p.product.toString() === pid);
+  const productIndex = cart.products.findIndex(
+    p => p.product.toString() === pid
+  );
 
   if (productIndex !== -1) {
     cart.products[productIndex].quantity += 1;
@@ -38,7 +40,9 @@ const deleteProductFromCart = async (req, res) => {
 
   const cart = await Cart.findById(cid);
 
-  cart.products = cart.products.filter(p => p.product.toString() !== pid);
+  cart.products = cart.products.filter(
+    p => p.product.toString() !== pid
+  );
 
   await cart.save();
   res.json(cart);
@@ -48,15 +52,6 @@ const clearCart = async (req, res) => {
   const { cid } = req.params;
   await Cart.findByIdAndUpdate(cid, { products: [] });
   res.json({ message: "Carrito vaciado" });
-};
-
-module.exports = {
-  getCarts,
-  getCartById,
-  createCart,
-  addProductToCart,
-  deleteProductFromCart,
-  clearCart
 };
 
 const updateCart = async (req, res) => {
@@ -72,15 +67,15 @@ const updateCart = async (req, res) => {
   res.json(cart);
 };
 
-module.exports.updateCart = updateCart;
-
 const updateProductQuantity = async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
 
   const cart = await Cart.findById(cid);
 
-  const product = cart.products.find(p => p.product.toString() === pid);
+  const product = cart.products.find(
+    p => p.product.toString() === pid
+  );
 
   if (product) {
     product.quantity = quantity;
@@ -90,4 +85,13 @@ const updateProductQuantity = async (req, res) => {
   res.json(cart);
 };
 
-module.exports.updateProductQuantity = updateProductQuantity;
+export {
+  getCarts,
+  getCartById,
+  createCart,
+  addProductToCart,
+  deleteProductFromCart,
+  clearCart,
+  updateCart,
+  updateProductQuantity
+};

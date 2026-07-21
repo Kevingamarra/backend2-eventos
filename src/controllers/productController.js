@@ -1,4 +1,4 @@
-const Product = require("../models/Product");
+import Product from "../models/Product.js";
 
 const getProducts = async (req, res) => {
   try {
@@ -8,9 +8,7 @@ const getProducts = async (req, res) => {
     page = parseInt(page);
 
     let filter = {};
-    if (query) {
-      filter.category = query;
-    }
+    if (query) filter.category = query;
 
     let sortOption = {};
     if (sort === "asc") sortOption.price = 1;
@@ -37,7 +35,6 @@ const getProducts = async (req, res) => {
       prevLink: page > 1 ? `/api/products?page=${page - 1}` : null,
       nextLink: page < totalPages ? `/api/products?page=${page + 1}` : null
     });
-
   } catch (error) {
     res.status(500).json({ error: "Error al obtener productos" });
   }
@@ -46,9 +43,11 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.pid);
-    if (!product) return res.status(404).json({ error: "Producto no encontrado" });
+    if (!product) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
     res.json(product);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Error al obtener producto" });
   }
 };
@@ -57,7 +56,7 @@ const createProduct = async (req, res) => {
   try {
     const newProduct = await Product.create(req.body);
     res.json(newProduct);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Error al crear producto" });
   }
 };
@@ -66,12 +65,12 @@ const deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.pid);
     res.json({ message: "Producto eliminado" });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Error al eliminar producto" });
   }
 };
 
-module.exports = {
+export {
   getProducts,
   getProductById,
   createProduct,
