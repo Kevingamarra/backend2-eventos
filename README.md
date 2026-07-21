@@ -1,48 +1,54 @@
-# Backend Pura Belleza
+# Backend 2 - Plataforma de Eventos
 
-API REST desarrollada con Node.js, Express y MongoDB para la gestión de productos y carrito de compras.
+## Descripción
 
-## Funcionalidades
-
-* CRUD completo de productos
-* Creación de carrito
-* Agregado de productos al carrito
-* Incremento automático de quantity
-* Actualización de cantidad de productos
-* Eliminación de productos del carrito
-* Vaciado completo del carrito
-* Uso de ObjectId y populate para relaciones
+API REST desarrollada con Node.js, Express y MongoDB siguiendo una arquitectura por capas como base para una plataforma de gestión de eventos.
 
 ## Tecnologías
 
-* Node.js
-* Express
-* MongoDB Atlas
-* Mongoose
+- Node.js
+- Express
+- MongoDB Atlas
+- Mongoose
+- Dotenv
 
-## Endpoints principales
+## Instalación
 
-### Productos
+```bash
+npm install
+```
 
-* GET /api/products
-* GET /api/products/:pid
-* POST /api/products
-* PUT /api/products/:pid
-* DELETE /api/products/:pid
+## Variables de entorno
 
-### Carrito
+Crear un archivo `.env` tomando como referencia `.env.example`.
 
-* POST /api/carts
-* GET /api/carts/:cid
-* POST /api/carts/:cid/products/:pid
-* PUT /api/carts/:cid/products/:pid
-* DELETE /api/carts/:cid/products/:pid
-* DELETE /api/carts/:cid
+## Ejecución
 
-## Nota
+```bash
+npm start
+```
 
-La persistencia se implementó utilizando MongoDB en lugar de file system, manteniendo la lógica solicitada en la consigna.
+## Estructura
 
-## 📁 Repositorio
+```
+src/
+├── config/
+├── controllers/
+├── dao/
+├── middlewares/
+├── models/
+├── repositories/
+├── routes/
+├── services/
+├── utils/
+├── app.js
+└── server.js
+```
 
-https://github.com/Kevingamarra/pura-belleza-backend.git
+## Endpoints
+
+- GET /api/health
+- GET /api/products
+- GET /api/carts
+- GET /api/events
+- GET /api/sessions
