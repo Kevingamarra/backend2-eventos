@@ -1,0 +1,13 @@
+import usersDAO from "../dao/users.dao.js";
+
+class UsersRepository {
+  async getByEmail(email) {
+    return await usersDAO.getByEmail(email);
+  }
+
+  async create(userData) {
+    return await usersDAO.create(userData);
+  }
+}
+
+export default new UsersRepository();

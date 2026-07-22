@@ -2,7 +2,9 @@
 
 ## Descripción
 
-API REST desarrollada con Node.js, Express y MongoDB siguiendo una arquitectura por capas como base para una plataforma de gestión de eventos.
+API REST desarrollada con Node.js, Express y MongoDB siguiendo una arquitectura por capas para una plataforma de gestión de eventos.
+
+En esta segunda preentrega se implementó el registro seguro de usuarios utilizando bcrypt para el hash de contraseñas y persistencia en MongoDB Atlas.
 
 ## Tecnologías
 
@@ -10,45 +12,10 @@ API REST desarrollada con Node.js, Express y MongoDB siguiendo una arquitectura 
 - Express
 - MongoDB Atlas
 - Mongoose
+- Bcrypt
 - Dotenv
 
 ## Instalación
 
 ```bash
 npm install
-```
-
-## Variables de entorno
-
-Crear un archivo `.env` tomando como referencia `.env.example`.
-
-## Ejecución
-
-```bash
-npm start
-```
-
-## Estructura
-
-```
-src/
-├── config/
-├── controllers/
-├── dao/
-├── middlewares/
-├── models/
-├── repositories/
-├── routes/
-├── services/
-├── utils/
-├── app.js
-└── server.js
-```
-
-## Endpoints
-
-- GET /api/health
-- GET /api/products
-- GET /api/carts
-- GET /api/events
-- GET /api/sessions
