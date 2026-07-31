@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+
+import initializePassport from "./config/passport.config.js";
 
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
@@ -15,6 +18,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use(cookieParser());
+
+initializePassport();
+
+app.use(passport.initialize());
 
 app.get("/api/health", (req, res) => {
   res.json({

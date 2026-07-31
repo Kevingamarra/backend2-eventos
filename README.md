@@ -2,13 +2,17 @@
 
 Backend desarrollado como proyecto para la materia **Backend 2 – Diseño y Arquitectura Backend** de Coderhouse.
 
-## Descripción
+---
 
-API REST desarrollada con Node.js, Express y MongoDB Atlas, organizada mediante una arquitectura por capas. El proyecto incluye autenticación con JWT, cookies HttpOnly, encriptación de contraseñas con bcrypt y persistencia de datos utilizando MongoDB.
+# Descripción
+
+API REST desarrollada con **Node.js**, **Express** y **MongoDB Atlas**, organizada mediante una arquitectura por capas.
+
+La autenticación fue refactorizada utilizando **Passport.js**, manteniendo el uso de **JWT** y **cookies HttpOnly**. Gracias a esta implementación, el proyecto quedó preparado para incorporar nuevas estrategias de autenticación (Google, GitHub u otros providers) sin modificar la configuración principal de la aplicación.
 
 ---
 
-## Repositorio
+# Repositorio
 
 GitHub:
 
@@ -16,12 +20,15 @@ https://github.com/Kevingamarra/backend2-eventos
 
 ---
 
-## Tecnologías utilizadas
+# Tecnologías utilizadas
 
 - Node.js
 - Express
 - MongoDB Atlas
 - Mongoose
+- Passport.js
+- Passport Local
+- Passport JWT
 - Bcrypt
 - JSON Web Token (JWT)
 - Cookie Parser
@@ -30,37 +37,37 @@ https://github.com/Kevingamarra/backend2-eventos
 
 ---
 
-## Instalación
+# Instalación
 
-### Clonar el repositorio
+## Clonar el repositorio
 
 ```bash
 git clone https://github.com/Kevingamarra/backend2-eventos.git
 ```
 
-### Ingresar al proyecto
+## Ingresar al proyecto
 
 ```bash
 cd backend2-eventos
 ```
 
-### Instalar dependencias
+## Instalar dependencias
 
 ```bash
 npm install
 ```
 
-### Configurar variables de entorno
+## Configurar variables de entorno
 
 Crear un archivo `.env` tomando como referencia el archivo `.env.example`.
 
-### Ejecutar el proyecto
+## Ejecutar el proyecto
 
 ```bash
 npm start
 ```
 
-### Modo desarrollo
+## Modo desarrollo
 
 ```bash
 npm run dev
@@ -68,7 +75,7 @@ npm run dev
 
 ---
 
-## Variables de entorno
+# Variables de entorno
 
 El proyecto utiliza las siguientes variables:
 
@@ -90,15 +97,17 @@ JWT_EXPIRES_IN=1h
 
 ---
 
-## Estructura del proyecto
+# Estructura del proyecto
 
-```
+```text
 backend2-eventos/
 │
 ├── src/
 │   ├── app.js
 │   ├── server.js
 │   ├── config/
+│   │   ├── db.js
+│   │   └── passport.config.js
 │   ├── controllers/
 │   ├── dao/
 │   ├── middlewares/
@@ -115,105 +124,103 @@ backend2-eventos/
 
 ---
 
-## Endpoints
+# Arquitectura
 
-### Health
+El proyecto está organizado siguiendo una arquitectura por capas para separar responsabilidades y facilitar el mantenimiento del código.
 
-**GET /api/health**
-
-Verifica que el servidor esté funcionando correctamente.
+- **Routes:** definen los endpoints de la API.
+- **Controllers:** reciben las peticiones HTTP y generan las respuestas.
+- **Repositories:** actúan como intermediarios entre la lógica de negocio y la persistencia.
+- **DAO:** realizan el acceso a la base de datos mediante Mongoose.
+- **Models:** definen los esquemas de MongoDB.
+- **Config:** contiene la configuración de la base de datos y Passport.
+- **Middlewares:** centralizan validaciones y autenticación.
+- **Utils:** funciones auxiliares utilizadas por el proyecto.
 
 ---
 
-### Events
+# Autenticación
 
-**GET /api/events**
+La autenticación está completamente centralizada mediante **Passport.js**.
+
+Se implementaron tres estrategias:
+
+### Register
+
+La estrategia **register** verifica que el correo electrónico no exista previamente, encripta la contraseña utilizando **bcrypt** y crea el usuario con el rol `user`.
+
+### Login
+
+La estrategia **login** valida las credenciales del usuario mediante Passport.
+
+Una vez autenticado correctamente, el controlador genera un **JWT** y lo almacena dentro de una cookie **HttpOnly** llamada `currentUser`.
+
+### Current
+
+La estrategia **current** utiliza **Passport JWT** para validar automáticamente el token almacenado en la cookie.
+
+Si el token es válido, el usuario autenticado queda disponible en `req.user`.
+
+Esta arquitectura permite incorporar fácilmente nuevas estrategias de autenticación (Google, GitHub u otros providers) sin modificar la configuración principal de la aplicación.
+
+---
+
+# Endpoints
+
+## Health
+
+### GET /api/health
+
+Verifica que el servidor se encuentre funcionando correctamente.
+
+---
+
+## Events
+
+### GET /api/events
 
 Obtiene el listado de eventos.
 
 ---
 
-### Products
+## Products
 
-**GET /api/products**
-
-Devuelve todos los productos registrados.
-
-**GET /api/products/:pid**
-
-Obtiene un producto mediante su ID.
-
-**POST /api/products**
-
-Crea un nuevo producto.
-
-**DELETE /api/products/:pid**
-
-Elimina un producto por su ID.
+- GET /api/products
+- GET /api/products/:pid
+- POST /api/products
+- DELETE /api/products/:pid
 
 ---
 
-### Carts
+## Carts
 
-**GET /api/carts**
-
-Obtiene todos los carritos.
-
-**GET /api/carts/:cid**
-
-Obtiene un carrito mediante su ID.
-
-**POST /api/carts**
-
-Crea un carrito vacío.
-
-**POST /api/carts/:cid/products/:pid**
-
-Agrega un producto a un carrito.
-
-**PUT /api/carts/:cid**
-
-Actualiza el contenido completo de un carrito.
-
-**PUT /api/carts/:cid/products/:pid**
-
-Actualiza la cantidad de un producto dentro del carrito.
-
-**DELETE /api/carts/:cid/products/:pid**
-
-Elimina un producto del carrito.
-
-**DELETE /api/carts/:cid**
-
-Vacía el carrito.
+- GET /api/carts
+- GET /api/carts/:cid
+- POST /api/carts
+- POST /api/carts/:cid/products/:pid
+- PUT /api/carts/:cid
+- PUT /api/carts/:cid/products/:pid
+- DELETE /api/carts/:cid/products/:pid
+- DELETE /api/carts/:cid
 
 ---
 
-### Sessions
+## Sessions
 
-**POST /api/sessions/register**
-
-Registra un nuevo usuario almacenando la contraseña encriptada con bcrypt.
-
-**POST /api/sessions/login**
-
-Inicia sesión, genera un JWT y lo almacena en una cookie HttpOnly.
-
-**GET /api/sessions/current**
-
-Obtiene la información del usuario autenticado validando el token.
-
-**POST /api/sessions/logout**
-
-Cierra la sesión eliminando la cookie de autenticación.
+- POST /api/sessions/register
+- POST /api/sessions/login
+- GET /api/sessions/current
+- POST /api/sessions/logout
 
 ---
 
-## Ejemplos de uso
+# Ejemplos de uso
 
-### Registro de usuario
+## Registro de usuario
 
-**POST /api/sessions/register**
+### POST /api/sessions/register
+
+Body:
 
 ```json
 {
@@ -229,15 +236,23 @@ Respuesta:
 ```json
 {
   "status": "success",
-  "message": "Usuario registrado correctamente"
+  "payload": {
+    "_id": "...",
+    "first_name": "Kevin",
+    "last_name": "Gamarra",
+    "email": "kevin@mail.com",
+    "role": "user"
+  }
 }
 ```
 
 ---
 
-### Inicio de sesión
+## Inicio de sesión
 
-**POST /api/sessions/login**
+### POST /api/sessions/login
+
+Body:
 
 ```json
 {
@@ -255,57 +270,62 @@ Respuesta:
 }
 ```
 
----
-
-### Usuario autenticado
-
-**GET /api/sessions/current**
-
-```json
-{
-  "status": "success",
-  "payload": {
-    "_id": "...",
-    "first_name": "Kevin",
-    "last_name": "Gamarra",
-    "email": "kevin@mail.com"
-  }
-}
-```
+Además, el servidor genera un JWT y lo almacena en una cookie **HttpOnly** llamada `currentUser`.
 
 ---
 
-### Cerrar sesión
+## Usuario autenticado
 
-**POST /api/sessions/logout**
+### GET /api/sessions/current
 
 Respuesta:
 
 ```json
 {
   "status": "success",
-  "message": "Logout correcto"
+  "payload": {
+    "id": "...",
+    "email": "kevin@mail.com",
+    "role": "user"
+  }
 }
 ```
 
 ---
 
-## Funcionalidades implementadas
+## Cierre de sesión
 
-- Arquitectura organizada por capas.
-- Conexión a MongoDB Atlas mediante Mongoose.
-- Registro de usuarios con contraseñas encriptadas utilizando bcrypt.
-- Autenticación mediante JWT y cookies HttpOnly.
-- Middleware para proteger rutas privadas.
-- CRUD de productos.
-- Gestión de carritos.
-- Configuración mediante variables de entorno.
+### POST /api/sessions/logout
+
+Respuesta:
+
+```json
+{
+  "status": "success",
+  "message": "Sesión cerrada"
+}
+```
 
 ---
 
-## Autor
+# Funcionalidades implementadas
 
-Kevin Gamarra
+- Arquitectura organizada por capas.
+- Persistencia con MongoDB Atlas y Mongoose.
+- CRUD completo de productos.
+- Gestión completa de carritos.
+- Autenticación centralizada mediante Passport.js.
+- Estrategias Passport Local (`register` y `login`).
+- Estrategia Passport JWT (`current`).
+- Contraseñas encriptadas con bcrypt.
+- Tokens JWT almacenados en cookies HttpOnly.
+- Variables de entorno mediante dotenv.
+- Proyecto preparado para incorporar nuevas estrategias de autenticación (Google, GitHub u otros providers).
+
+---
+
+# Autor
+
+**Kevin Gamarra**
 
 Proyecto desarrollado como entrega para la materia **Backend 2 – Diseño y Arquitectura Backend** de Coderhouse.
-
