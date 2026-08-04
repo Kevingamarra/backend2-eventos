@@ -3,7 +3,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
 import usersRepository from "../repositories/users.repository.js";
-import { createHash, isValidPassword } from "../utils/hash.js";
+import sessionsService from "../services/sessions.service.js";
 
 const cookieExtractor = (req) => {
   let token = null;
@@ -25,43 +25,12 @@ const initializePassport = () => {
       },
       async (req, email, password, done) => {
         try {
-          const { first_name, last_name } = req.body;
-
-          const normalizedEmail = email.trim().toLowerCase();
-
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-          if (!first_name || !last_name || !email || !password) {
-            return done(new Error("Todos los campos son obligatorios"));
-          }
-
-          if (!emailRegex.test(normalizedEmail)) {
-            return done(new Error("Email inválido"));
-          }
-
-          if (password.length < 6) {
-            return done(
-              new Error("La contraseña debe tener al menos 6 caracteres")
-            );
-          }
-
-          const existingUser = await usersRepository.getByEmail(normalizedEmail);
-
-          if (existingUser) {
-            return done(new Error("El email ya está registrado"));
-          }
-
-          const newUser = await usersRepository.create({
-            first_name,
-            last_name,
-            email: normalizedEmail,
-            password: createHash(password),
-            role: "user"
+          const user = await sessionsService.register({
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            email,
+            password
           });
-
-          const user = newUser.toObject();
-
-          delete user.password;
 
           return done(null, user);
         } catch (error) {
@@ -79,17 +48,12 @@ const initializePassport = () => {
       },
       async (email, password, done) => {
         try {
-          const normalizedEmail = email.trim().toLowerCase();
-
-          const user = await usersRepository.getByEmail(normalizedEmail);
+          const user = await sessionsService.login(
+            email,
+            password
+          );
 
           if (!user) {
-            return done(null, false, {
-              message: "Credenciales inválidas"
-            });
-          }
-
-          if (!isValidPassword(user, password)) {
             return done(null, false, {
               message: "Credenciales inválidas"
             });
@@ -114,11 +78,15 @@ const initializePassport = () => {
       },
       async (payload, done) => {
         try {
-          return done(null, {
-            id: payload.id,
-            email: payload.email,
-            role: payload.role
-          });
+          const user = await usersRepository.getById(
+            payload.id
+          );
+
+          if (!user) {
+            return done(null, false);
+          }
+
+          return done(null, user);
         } catch (error) {
           return done(error);
         }

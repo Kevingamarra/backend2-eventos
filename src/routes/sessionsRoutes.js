@@ -13,7 +13,12 @@ const router = Router();
 router.post("/register", (req, res, next) => {
   passport.authenticate("register", { session: false }, (err, user) => {
     if (err) {
-      return res.status(400).json({
+      const status =
+        err.message === "El email ya está registrado"
+          ? 409
+          : 400;
+
+      return res.status(status).json({
         status: "error",
         message: err.message
       });

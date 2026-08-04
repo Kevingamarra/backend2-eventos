@@ -1,5 +1,6 @@
 import ticketsService from "../services/tickets.service.js";
 import eventsService from "../services/events.service.js";
+import ticketDTO from "../dto/ticket.dto.js";
 
 export const createTicket = async (req, res) => {
   try {
@@ -11,11 +12,22 @@ export const createTicket = async (req, res) => {
 
     res.status(201).json({
       status: "success",
-      payload: ticket
+      payload: ticketDTO(ticket)
     });
   } catch (error) {
     if (error.message === "Evento no encontrado") {
       return res.status(404).json({
+        status: "error",
+        message: error.message
+      });
+    }
+
+    if (
+      error.message ===
+        "Ya tenés una inscripción activa para este evento" ||
+      error.message === "No hay cupos suficientes"
+    ) {
+      return res.status(409).json({
         status: "error",
         message: error.message
       });
@@ -36,7 +48,7 @@ export const getMyTickets = async (req, res) => {
 
     res.json({
       status: "success",
-      payload: tickets
+      payload: tickets.map(ticketDTO)
     });
   } catch (error) {
     res.status(500).json({
@@ -77,7 +89,7 @@ export const getEventTickets = async (req, res) => {
 
     res.json({
       status: "success",
-      payload: tickets
+      payload: tickets.map(ticketDTO)
     });
   } catch (error) {
     res.status(500).json({
@@ -96,7 +108,7 @@ export const cancelTicket = async (req, res) => {
 
     res.json({
       status: "success",
-      payload: ticket
+      payload: ticketDTO(ticket)
     });
   } catch (error) {
     res.status(400).json({

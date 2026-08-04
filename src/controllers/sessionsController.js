@@ -1,9 +1,10 @@
 import { generateToken } from "../utils/jwt.js";
+import currentUserDTO from "../dto/currentUser.dto.js";
 
 export const register = (req, res) => {
   res.status(201).json({
     status: "success",
-    payload: req.user
+    payload: currentUserDTO(req.user)
   });
 };
 
@@ -26,7 +27,7 @@ export const login = (req, res) => {
 export const current = (req, res) => {
   res.json({
     status: "success",
-    payload: req.user
+    payload: currentUserDTO(req.user)
   });
 };
 

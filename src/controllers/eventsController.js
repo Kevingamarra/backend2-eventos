@@ -1,4 +1,5 @@
 import eventsService from "../services/events.service.js";
+import eventDTO from "../dto/event.dto.js";
 
 export const getEvents = async (req, res) => {
   try {
@@ -6,7 +7,8 @@ export const getEvents = async (req, res) => {
 
     res.json({
       status: "success",
-      ...events
+      ...events,
+      data: events.data.map(eventDTO)
     });
   } catch (error) {
     res.status(500).json({
@@ -29,7 +31,7 @@ export const getEventById = async (req, res) => {
 
     res.json({
       status: "success",
-      payload: event
+      payload: eventDTO(event)
     });
   } catch (error) {
     res.status(500).json({
@@ -86,7 +88,7 @@ export const updateEvent = async (req, res) => {
 
     res.json({
       status: "success",
-      payload: updatedEvent
+      payload: eventDTO(updatedEvent)
     });
   } catch (error) {
     res.status(400).json({
@@ -124,7 +126,7 @@ export const updateEventStatus = async (req, res) => {
 
     res.json({
       status: "success",
-      payload: updatedEvent
+      payload: eventDTO(updatedEvent)
     });
   } catch (error) {
     res.status(400).json({
