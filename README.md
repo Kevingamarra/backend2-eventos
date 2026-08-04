@@ -8,7 +8,11 @@ Backend desarrollado como proyecto para la materia **Backend 2 – Diseño y Arq
 
 API REST desarrollada con **Node.js**, **Express** y **MongoDB Atlas**, organizada mediante una arquitectura por capas.
 
-La autenticación fue refactorizada utilizando **Passport.js**, manteniendo el uso de **JWT** y **cookies HttpOnly**. Gracias a esta implementación, el proyecto quedó preparado para incorporar nuevas estrategias de autenticación (Google, GitHub u otros providers) sin modificar la configuración principal de la aplicación.
+El proyecto implementa autenticación con **Passport.js**, **JWT** y **cookies HttpOnly**, además de un sistema de autorización basado en roles (`user`, `organizer` y `admin`).
+
+La autorización se realiza mediante middlewares reutilizables que diferencian correctamente usuarios no autenticados (**401 Unauthorized**) de usuarios autenticados sin permisos (**403 Forbidden**).
+
+La aplicación quedó preparada para incorporar nuevas estrategias de autenticación (Google, GitHub u otros providers) sin modificar la configuración principal.
 
 ---
 
@@ -29,6 +33,7 @@ https://github.com/Kevingamarra/backend2-eventos
 - Passport.js
 - Passport Local
 - Passport JWT
+- Sistema de autorización por roles
 - Bcrypt
 - JSON Web Token (JWT)
 - Cookie Parser
@@ -214,6 +219,12 @@ Obtiene el listado de eventos.
 
 ---
 
+## Users
+
+- GET /api/users
+
+---
+
 # Ejemplos de uso
 
 ## Registro de usuario
@@ -308,17 +319,69 @@ Respuesta:
 
 ---
 
+# Roles
+
+El sistema implementa tres roles de usuario:
+
+- **user**: puede consultar eventos publicados.
+- **organizer**: puede crear eventos y modificar únicamente los eventos que creó.
+- **admin**: tiene acceso administrativo y puede gestionar cualquier recurso.
+
+El registro público siempre crea usuarios con el rol **user**. Los roles **organizer** y **admin** se asignan posteriormente por un administrador.
+
+---
+
+# Matriz de permisos
+
+| Acción | user | organizer | admin |
+|--------|:----:|:---------:|:-----:|
+| Consultar eventos | Sí | Sí | Sí |
+| Crear eventos | No | Sí | Sí |
+| Modificar eventos propios | No | Sí | Sí |
+| Modificar cualquier evento | No | No | Sí |
+| Ver todos los usuarios | No | No | Sí |
+
+---
+
+# Rutas protegidas
+
+- **GET /api/sessions/current** → Requiere autenticación.
+- **POST /api/events** → Solo **organizer** o **admin**.
+- **PUT /api/events/:id** → Solo el **organizer** propietario del evento o un **admin**.
+- **GET /api/users** → Solo **admin**.
+
+---
+
+# Autenticación y autorización
+
+La API diferencia correctamente los errores de autenticación y autorización.
+
+**401 Unauthorized**
+
+Se devuelve cuando el usuario no posee una sesión válida o el JWT es inexistente o inválido.
+
+**403 Forbidden**
+
+Se devuelve cuando el usuario está autenticado correctamente, pero no posee permisos para ejecutar la acción solicitada.
+
+---
+
 # Funcionalidades implementadas
 
 - Arquitectura organizada por capas.
 - Persistencia con MongoDB Atlas y Mongoose.
-- CRUD completo de productos.
-- Gestión completa de carritos.
-- Autenticación centralizada mediante Passport.js.
+- CRUD de productos.
+- Gestión de carritos.
+- Gestión de eventos.
+- Autenticación mediante Passport.js.
 - Estrategias Passport Local (`register` y `login`).
 - Estrategia Passport JWT (`current`).
+- Sistema de autorización basado en roles (`user`, `organizer` y `admin`).
+- Middlewares reutilizables de autenticación y autorización.
+- Protección de rutas mediante JWT almacenado en cookies HttpOnly.
+- Validación de propiedad de recursos para organizadores.
+- Ruta administrativa protegida para administradores.
 - Contraseñas encriptadas con bcrypt.
-- Tokens JWT almacenados en cookies HttpOnly.
 - Variables de entorno mediante dotenv.
 - Proyecto preparado para incorporar nuevas estrategias de autenticación (Google, GitHub u otros providers).
 
@@ -329,3 +392,4 @@ Respuesta:
 **Kevin Gamarra**
 
 Proyecto desarrollado como entrega para la materia **Backend 2 – Diseño y Arquitectura Backend** de Coderhouse.
+

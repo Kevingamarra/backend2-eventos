@@ -9,6 +9,8 @@ import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import eventsRoutes from "./routes/eventsRoutes.js";
 import sessionsRoutes from "./routes/sessionsRoutes.js";
+import usersRoutes from "./routes/usersRoutes.js";
+
 import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
@@ -34,6 +36,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/events", eventsRoutes);
 app.use("/api/sessions", sessionsRoutes);
+app.use("/api/users", usersRoutes);
 
 app.use(errorHandler);
 

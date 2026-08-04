@@ -5,9 +5,23 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  description: String,
-  date: Date,
-  location: String
+  description: {
+    type: String,
+    default: ""
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
+  organizer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  }
 });
 
 export default mongoose.model("Event", eventSchema);

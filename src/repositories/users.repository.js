@@ -1,6 +1,10 @@
 import usersDAO from "../dao/users.dao.js";
 
 class UsersRepository {
+  async getAll() {
+    return await usersDAO.getAll();
+  }
+
   async getByEmail(email) {
     return await usersDAO.getByEmail(email);
   }
