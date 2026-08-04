@@ -1,8 +1,8 @@
 import eventsDAO from "../dao/events.dao.js";
 
 class EventsRepository {
-  async getAll() {
-    return await eventsDAO.getAll();
+  async getAll(filters, options) {
+    return await eventsDAO.getAll(filters, options);
   }
 
   async getById(id) {
@@ -15,6 +15,10 @@ class EventsRepository {
 
   async update(id, eventData) {
     return await eventsDAO.update(id, eventData);
+  }
+
+  async updateStatus(id, status) {
+    return await eventsDAO.updateStatus(id, status);
   }
 
   async delete(id) {

@@ -1,12 +1,37 @@
 import Event from "../models/Event.js";
 
 class EventsDAO {
-  async getAll() {
-    return await Event.find();
+  async getAll(filters = {}, options = {}) {
+    const {
+      page = 1,
+      limit = 10,
+      sort = "date"
+    } = options;
+
+    const skip = (page - 1) * limit;
+
+    const total = await Event.countDocuments(filters);
+
+    const data = await Event.find(filters)
+      .sort({ [sort]: 1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("organizer", "first_name last_name email");
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
   async getById(id) {
-    return await Event.findById(id);
+    return await Event.findById(id).populate(
+      "organizer",
+      "first_name last_name email"
+    );
   }
 
   async create(eventData) {
@@ -17,6 +42,14 @@ class EventsDAO {
     return await Event.findByIdAndUpdate(id, eventData, {
       new: true
     });
+  }
+
+  async updateStatus(id, status) {
+    return await Event.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
   }
 
   async delete(id) {

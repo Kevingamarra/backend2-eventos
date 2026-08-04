@@ -186,6 +186,68 @@ Verifica que el servidor se encuentre funcionando correctamente.
 
 Obtiene el listado de eventos.
 
+Filtros disponibles:
+
+- status
+- category
+- location
+- dateFrom
+- dateTo
+
+Parámetros opcionales:
+
+- page
+- limit
+- sort
+
+---
+
+### GET /api/events/:id
+
+Obtiene un evento por su identificador.
+
+---
+
+### POST /api/events
+
+Crea un nuevo evento.
+
+Acceso:
+
+- organizer
+- admin
+
+El organizador se obtiene automáticamente desde el usuario autenticado.
+
+---
+
+### PUT /api/events/:id
+
+Actualiza un evento existente.
+
+Acceso:
+
+- organizer propietario
+- admin
+
+---
+
+### PATCH /api/events/:id/status
+
+Actualiza el estado de un evento.
+
+Estados permitidos:
+
+- draft
+- published
+- cancelled
+- finished
+
+Acceso:
+
+- organizer propietario
+- admin
+
 ---
 
 ## Products
@@ -372,7 +434,12 @@ Se devuelve cuando el usuario está autenticado correctamente, pero no posee per
 - Persistencia con MongoDB Atlas y Mongoose.
 - CRUD de productos.
 - Gestión de carritos.
-- Gestión de eventos.
+- Gestión completa de eventos.
+- Filtros por estado, categoría, ubicación y rango de fechas.
+- Paginación y ordenamiento del listado de eventos.
+- Estados de eventos: draft, published, cancelled y finished.
+- Validaciones de negocio en la capa services.
+- Asociación de cada evento con su organizador mediante ObjectId.
 - Autenticación mediante Passport.js.
 - Estrategias Passport Local (`register` y `login`).
 - Estrategia Passport JWT (`current`).

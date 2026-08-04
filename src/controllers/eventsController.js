@@ -2,11 +2,34 @@ import eventsService from "../services/events.service.js";
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await eventsService.getAll();
+    const events = await eventsService.getAll(req.query);
 
     res.json({
       status: "success",
-      payload: events
+      ...events
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message
+    });
+  }
+};
+
+export const getEventById = async (req, res) => {
+  try {
+    const event = await eventsService.getById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Evento no encontrado"
+      });
+    }
+
+    res.json({
+      status: "success",
+      payload: event
     });
   } catch (error) {
     res.status(500).json({
@@ -48,7 +71,7 @@ export const updateEvent = async (req, res) => {
 
     if (
       req.user.role === "organizer" &&
-      event.organizer.toString() !== req.user.id
+      event.organizer._id.toString() !== req.user.id
     ) {
       return res.status(403).json({
         status: "error",
@@ -66,7 +89,45 @@ export const updateEvent = async (req, res) => {
       payload: updatedEvent
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
+      status: "error",
+      message: error.message
+    });
+  }
+};
+
+export const updateEventStatus = async (req, res) => {
+  try {
+    const event = await eventsService.getById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Evento no encontrado"
+      });
+    }
+
+    if (
+      req.user.role === "organizer" &&
+      event.organizer._id.toString() !== req.user.id
+    ) {
+      return res.status(403).json({
+        status: "error",
+        message: "No tenés permisos para modificar este evento"
+      });
+    }
+
+    const updatedEvent = await eventsService.updateStatus(
+      req.params.id,
+      req.body.status
+    );
+
+    res.json({
+      status: "success",
+      payload: updatedEvent
+    });
+  } catch (error) {
+    res.status(400).json({
       status: "error",
       message: error.message
     });
