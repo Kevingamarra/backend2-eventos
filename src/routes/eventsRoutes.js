@@ -11,6 +11,11 @@ import {
 import auth from "../middlewares/auth.middleware.js";
 import authorize from "../middlewares/authorize.middleware.js";
 
+import {
+  createTicket,
+  getEventTickets
+} from "../controllers/ticketsController.js";
+
 const router = express.Router();
 
 router.get("/", getEvents);
@@ -36,6 +41,19 @@ router.patch(
   auth,
   authorize("organizer", "admin"),
   updateEventStatus
+);
+
+router.post(
+  "/:eid/tickets",
+  auth,
+  createTicket
+);
+
+router.get(
+  "/:eid/tickets",
+  auth,
+  authorize("organizer", "admin"),
+  getEventTickets
 );
 
 export default router;

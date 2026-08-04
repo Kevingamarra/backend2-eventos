@@ -89,6 +89,11 @@ El proyecto utiliza las siguientes variables:
 - **MONGO_URL**: cadena de conexión a MongoDB Atlas.
 - **JWT_SECRET**: clave utilizada para firmar los tokens JWT.
 - **JWT_EXPIRES_IN**: tiempo de expiración del token.
+- **MAIL_HOST**: servidor SMTP.
+- **MAIL_PORT**: puerto SMTP.
+- **MAIL_USER**: usuario del correo.
+- **MAIL_PASS**: contraseña de aplicación.
+- **MAIL_FROM**: remitente de los emails.
 
 Ejemplo del archivo `.env.example`:
 
@@ -98,6 +103,12 @@ NODE_ENV=development
 MONGO_URL=
 JWT_SECRET=
 JWT_EXPIRES_IN=1h
+
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USER=
+MAIL_PASS=
+MAIL_FROM=
 ```
 
 ---
@@ -287,6 +298,46 @@ Acceso:
 
 ---
 
+## Tickets
+
+### POST /api/events/:eid/tickets
+
+Crear una inscripción a un evento publicado.
+
+Acceso:
+
+- Usuario autenticado.
+
+---
+
+### GET /api/tickets/my-tickets
+
+Obtiene los tickets del usuario autenticado.
+
+---
+
+### GET /api/events/:eid/tickets
+
+Obtiene los tickets de un evento.
+
+Acceso:
+
+- organizer propietario.
+- admin.
+
+---
+
+### PATCH /api/tickets/:tid/cancel
+
+Cancela un ticket sin eliminarlo físicamente.
+
+Acceso:
+
+- dueño del ticket.
+- admin.
+
+---
+
 # Ejemplos de uso
 
 ## Registro de usuario
@@ -440,6 +491,12 @@ Se devuelve cuando el usuario está autenticado correctamente, pero no posee per
 - Estados de eventos: draft, published, cancelled y finished.
 - Validaciones de negocio en la capa services.
 - Asociación de cada evento con su organizador mediante ObjectId.
+- Sistema de tickets e inscripciones.
+- Control de cupos disponibles por evento.
+- Prevención de inscripciones duplicadas.
+- Cancelación lógica de tickets.
+- Generación de códigos únicos de reserva.
+- Notificaciones por correo electrónico mediante Nodemailer.
 - Autenticación mediante Passport.js.
 - Estrategias Passport Local (`register` y `login`).
 - Estrategia Passport JWT (`current`).

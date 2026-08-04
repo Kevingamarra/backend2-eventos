@@ -5,6 +5,10 @@ class UsersRepository {
     return await usersDAO.getAll();
   }
 
+  async getById(id) {
+    return await usersDAO.getById(id);
+  }
+
   async getByEmail(email) {
     return await usersDAO.getByEmail(email);
   }

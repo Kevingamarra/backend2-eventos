@@ -1,3 +1,8 @@
 node_modules
 .env
 cookies.txt
+
+# Cookies de pruebas
+admincookies.txt
+usercookies.txt
+cookies.txt

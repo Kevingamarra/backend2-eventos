@@ -5,6 +5,10 @@ class UsersDAO {
     return await User.find().select("-password");
   }
 
+  async getById(id) {
+    return await User.findById(id).select("-password");
+  }
+
   async getByEmail(email) {
     return await User.findOne({ email });
   }
