@@ -402,19 +402,18 @@ Además, el servidor genera un JWT y lo almacena en una cookie **HttpOnly** llam
 
 ### GET /api/sessions/current
 
-Respuesta:
-
 ```json
 {
   "status": "success",
   "payload": {
     "id": "...",
+    "first_name": "Kevin",
+    "last_name": "Gamarra",
     "email": "kevin@mail.com",
     "role": "user"
   }
 }
 ```
-
 ---
 
 ## Cierre de sesión
@@ -520,15 +519,3 @@ Proyecto desarrollado como entrega para la materia **Backend 2 – Diseño y Arq
 
 ---
 
-# Arquitectura en capas
-
-El proyecto está organizado utilizando una arquitectura por capas para separar responsabilidades y facilitar el mantenimiento del código.
-
-- **Routes:** definen los endpoints de la API.
-- **Controllers:** reciben las solicitudes HTTP y devuelven las respuestas.
-- **Services:** concentran la lógica de negocio y utilizan los repositories.
-- **Repositories:** actúan como intermediarios entre los services y los DAO.
-- **DAO:** realizan el acceso a la base de datos mediante Mongoose.
-- **DTO:** controlan la información que se envía al cliente, evitando exponer datos sensibles como la contraseña.
-
-Esta organización facilita el mantenimiento, la escalabilidad y la reutilización del código.

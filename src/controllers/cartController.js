@@ -1,8 +1,9 @@
-import Cart from "../models/Cart.js";
+import cartsService from "../services/carts.service.js";
 
 const getCarts = async (req, res) => {
   try {
-    const carts = await Cart.find().populate("products.product");
+    const carts = await cartsService.getAll();
+
     res.json(carts);
   } catch (error) {
     res.status(500).json({
@@ -14,9 +15,7 @@ const getCarts = async (req, res) => {
 
 const getCartById = async (req, res) => {
   try {
-    const { cid } = req.params;
-
-    const cart = await Cart.findById(cid).populate("products.product");
+    const cart = await cartsService.getById(req.params.cid);
 
     if (!cart) {
       return res.status(404).json({
@@ -36,7 +35,8 @@ const getCartById = async (req, res) => {
 
 const createCart = async (req, res) => {
   try {
-    const newCart = await Cart.create({ products: [] });
+    const newCart = await cartsService.create();
+
     res.json(newCart);
   } catch (error) {
     res.status(500).json({
@@ -48,159 +48,81 @@ const createCart = async (req, res) => {
 
 const addProductToCart = async (req, res) => {
   try {
-    const { cid, pid } = req.params;
-
-    const cart = await Cart.findById(cid);
-
-    if (!cart) {
-      return res.status(404).json({
-        status: "error",
-        message: "Carrito no encontrado"
-      });
-    }
-
-    const productIndex = cart.products.findIndex(
-      p => p.product.toString() === pid
+    const cart = await cartsService.addProduct(
+      req.params.cid,
+      req.params.pid
     );
-
-    if (productIndex !== -1) {
-      cart.products[productIndex].quantity += 1;
-    } else {
-      cart.products.push({
-        product: pid,
-        quantity: 1
-      });
-    }
-
-    await cart.save();
 
     res.json(cart);
   } catch (error) {
-    res.status(500).json({
+    res.status(404).json({
       status: "error",
-      message: "Error al agregar el producto al carrito"
+      message: error.message
     });
   }
 };
 
 const deleteProductFromCart = async (req, res) => {
   try {
-    const { cid, pid } = req.params;
-
-    const cart = await Cart.findById(cid);
-
-    if (!cart) {
-      return res.status(404).json({
-        status: "error",
-        message: "Carrito no encontrado"
-      });
-    }
-
-    cart.products = cart.products.filter(
-      p => p.product.toString() !== pid
+    const cart = await cartsService.deleteProduct(
+      req.params.cid,
+      req.params.pid
     );
-
-    await cart.save();
 
     res.json(cart);
   } catch (error) {
-    res.status(500).json({
+    res.status(404).json({
       status: "error",
-      message: "Error al eliminar el producto del carrito"
+      message: error.message
     });
   }
 };
 
 const clearCart = async (req, res) => {
   try {
-    const { cid } = req.params;
-
-    const cart = await Cart.findByIdAndUpdate(
-      cid,
-      { products: [] },
-      { new: true }
-    );
-
-    if (!cart) {
-      return res.status(404).json({
-        status: "error",
-        message: "Carrito no encontrado"
-      });
-    }
+    await cartsService.clear(req.params.cid);
 
     res.json({
       status: "success",
       message: "Carrito vaciado"
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(404).json({
       status: "error",
-      message: "Error al vaciar el carrito"
+      message: error.message
     });
   }
 };
 
 const updateCart = async (req, res) => {
   try {
-    const { cid } = req.params;
-    const { products } = req.body;
-
-    const cart = await Cart.findByIdAndUpdate(
-      cid,
-      { products },
-      { new: true }
+    const cart = await cartsService.update(
+      req.params.cid,
+      req.body.products
     );
-
-    if (!cart) {
-      return res.status(404).json({
-        status: "error",
-        message: "Carrito no encontrado"
-      });
-    }
 
     res.json(cart);
   } catch (error) {
-    res.status(500).json({
+    res.status(404).json({
       status: "error",
-      message: "Error al actualizar el carrito"
+      message: error.message
     });
   }
 };
 
 const updateProductQuantity = async (req, res) => {
   try {
-    const { cid, pid } = req.params;
-    const { quantity } = req.body;
-
-    const cart = await Cart.findById(cid);
-
-    if (!cart) {
-      return res.status(404).json({
-        status: "error",
-        message: "Carrito no encontrado"
-      });
-    }
-
-    const product = cart.products.find(
-      p => p.product.toString() === pid
+    const cart = await cartsService.updateProductQuantity(
+      req.params.cid,
+      req.params.pid,
+      req.body.quantity
     );
-
-    if (!product) {
-      return res.status(404).json({
-        status: "error",
-        message: "Producto no encontrado en el carrito"
-      });
-    }
-
-    product.quantity = quantity;
-
-    await cart.save();
 
     res.json(cart);
   } catch (error) {
-    res.status(500).json({
+    res.status(404).json({
       status: "error",
-      message: "Error al actualizar la cantidad del producto"
+      message: error.message
     });
   }
 };
